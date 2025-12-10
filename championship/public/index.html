@@ -1,0 +1,340 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Championship Of Heroes</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container header-inner">
+        <div class="brand-block">
+          <p class="tagline">COH3 대회 컨트롤</p>
+          <h1>Championship Of Heroes</h1>
+          <p class="subtext">
+             홀슈타인 란드 주최 컴퍼니 오브 히어로즈 3 대회
+          </p>
+        </div>
+        <nav class="header-nav" aria-label="Primary actions">
+          <button class="nav-link" type="button" id="header-login">로그인</button>
+          <button class="nav-link" type="button" id="header-signup">회원가입</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="user-status" class="panel">
+        <div class="panel-heading">
+          <h2>접속 상태</h2>
+          <p>Championship Of Heroes 웹사이트를 사용하려면 로그인하세요.</p>
+        </div>
+        <div id="active-user" class="active-user hidden" role="status"></div>
+        <div class="panel-cta">
+          <button class="primary-button" type="button" id="status-login">로그인</button>
+          <button class="secondary-button" type="button" id="status-signup">회원가입</button>
+        </div>
+      </section>
+
+      <section
+        id="player-dashboard"
+        class="panel dashboard hidden"
+        data-role="player"
+      >
+        <div class="panel-heading">
+          <h2>플레이어 대시보드</h2>
+          <p>준비 상태를 확인하고, 밴과 픽을 검토하며, 전투단 선택을 확정하세요.</p>
+        </div>
+        <div id="player-schedule" class="panel-block"></div>
+        <div id="player-match-flow" class="panel-block"></div>
+      </section>
+
+      <section
+        id="viewer-dashboard"
+        class="panel dashboard hidden"
+        data-role="viewer"
+      >
+        <div class="panel-heading">
+          <h2>시청자 대시보드</h2>
+          <p>실시간 경기를 따라가고, 최신 밴과 픽을 확인하며, 바로 방송으로 이동하세요.</p>
+        </div>
+        <div id="viewer-tournaments" class="panel-block"></div>
+      </section>
+
+      <section
+        id="admin-dashboard"
+        class="panel dashboard hidden"
+        data-role="admin"
+      >
+        <div class="panel-heading">
+          <h2>관리자 도구</h2>
+          <p>토너먼트 일정을 만들고, 경기 상태를 업데이트하며, 최종 결과를 기록하세요.</p>
+        </div>
+        <form id="tournament-form" class="panel-block stacked-form">
+          <h3>토너먼트 생성</h3>
+          <div class="form-row">
+            <label for="tournament-name">토너먼트 이름</label>
+            <input
+              id="tournament-name"
+              name="name"
+              type="text"
+              required
+              placeholder="예: Championship Weekly 5"
+            />
+          </div>
+          <div class="form-row">
+            <label for="tournament-start">시작 시간</label>
+            <input
+              id="tournament-start"
+              name="start"
+              type="datetime-local"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <label for="tournament-round">라운드</label>
+            <input
+              id="tournament-round"
+              name="round"
+              type="text"
+              placeholder="예: 개막전"
+            />
+          </div>
+          <div class="form-row">
+            <label for="tournament-player1">플레이어 1</label>
+            <select id="tournament-player1" name="player1" required>
+              <option value="">플레이어 선택</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="tournament-player2">플레이어 2</label>
+            <select id="tournament-player2" name="player2" required>
+              <option value="">플레이어 선택</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="tournament-stream-withgo">치지직(Withgo) 링크</label>
+            <input
+              id="tournament-stream-withgo"
+              name="withgo"
+              type="url"
+              placeholder="https://chzzk..."
+            />
+          </div>
+          <div class="form-row">
+            <label for="tournament-stream-soop">SOOP 링크</label>
+            <input
+              id="tournament-stream-soop"
+              name="soop"
+              type="url"
+              placeholder="https://sooplive..."
+            />
+          </div>
+          <button type="submit" class="primary-button">토너먼트 생성하기</button>
+        </form>
+        <div id="admin-tournaments" class="panel-block"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="container">
+        <small>Championship Of Heroes</small>
+      </div>
+    </footer>
+
+    <div
+      class="modal hidden"
+      id="login-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="login-modal-title"
+    >
+      <div class="modal-backdrop" data-modal-close></div>
+      <div class="modal-content">
+        <button class="modal-close" type="button" data-modal-close>
+          <span aria-hidden="true">&times;</span>
+          <span class="sr-only">대화상자 닫기</span>
+        </button>
+        <h2 id="login-modal-title">로그인</h2>
+        <p class="modal-description">
+          계정 ID(또는 닉네임)과 비밀번호를 입력하세요.
+        </p>
+        <form id="login-form" class="stacked-form">
+          <div class="form-row">
+            <label for="login-account">계정 ID 또는 닉네임</label>
+            <input
+              id="login-account"
+              name="account"
+              type="text"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <label for="login-password">비밀번호</label>
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <button type="submit" class="primary-button">로그인</button>
+          <p class="modal-caption">
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div
+      class="modal hidden"
+      id="signup-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="signup-modal-title"
+    >
+      <div class="modal-backdrop" data-modal-close></div>
+      <div class="modal-content">
+        <button class="modal-close" type="button" data-modal-close>
+          <span aria-hidden="true">&times;</span>
+          <span class="sr-only">대화상자 닫기</span>
+        </button>
+        <h2 id="signup-modal-title">회원가입</h2>
+        <p class="modal-description">
+          등록할 계정 유형을 선택하세요.
+        </p>
+        <div class="tab-switch" role="tablist">
+          <button
+            type="button"
+            class="tab-button active"
+            data-signup-tab="viewer"
+            aria-selected="true"
+          >
+            시청자
+          </button>
+          <button
+            type="button"
+            class="tab-button"
+            data-signup-tab="player"
+            aria-selected="false"
+          >
+            플레이어
+          </button>
+        </div>
+        <form
+          id="signup-viewer-form"
+          class="stacked-form signup-form"
+          data-signup-form="viewer"
+        >
+          <div class="form-row">
+            <label for="signup-viewer-id">계정 ID</label>
+            <input
+              id="signup-viewer-id"
+              name="accountId"
+              type="text"
+              required
+              autocomplete="off"
+              placeholder="예: coh3viewer"
+            />
+          </div>
+          <div class="form-row">
+            <label for="signup-viewer-password">비밀번호</label>
+            <input
+              id="signup-viewer-password"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              minlength="4"
+            />
+          </div>
+          <div class="form-row">
+            <label for="signup-viewer-email">이메일</label>
+            <input
+              id="signup-viewer-email"
+              name="email"
+              type="email"
+              required
+              placeholder="you@example.com"
+            />
+          </div>
+          <button type="submit" class="primary-button">시청자 계정 생성</button>
+        </form>
+        <form
+          id="signup-player-form"
+          class="stacked-form signup-form hidden"
+          data-signup-form="player"
+        >
+          <div class="form-row">
+            <label for="signup-player-nickname">닉네임</label>
+            <input
+              id="signup-player-nickname"
+              name="nickname"
+              type="text"
+              required
+              placeholder="예: DesertFox"
+            />
+          </div>
+          <div class="form-row">
+            <label for="signup-player-password">비밀번호</label>
+            <input
+              id="signup-player-password"
+              name="password"
+              type="password"
+              required
+              autocomplete="new-password"
+              minlength="4"
+            />
+          </div>
+          <div class="form-row">
+            <label for="signup-player-rank">최대 티어</label>
+            <select id="signup-player-rank" name="rank" required>
+              <option value="">티어 선택</option>
+              <optgroup label="챌린저">
+                <option value="챌린저 1">챌린저 1</option>
+                <option value="챌린저 2">챌린저 2</option>
+                <option value="챌린저 3">챌린저 3</option>
+                <option value="챌린저 4">챌린저 4</option>
+                <option value="챌린저 5">챌린저 5</option>
+              </optgroup>
+              <optgroup label="골드">
+                <option value="골드 1">골드 1</option>
+                <option value="골드 2">골드 2</option>
+                <option value="골드 3">골드 3</option>
+              </optgroup>
+              <optgroup label="실버">
+                <option value="실버 1">실버 1</option>
+                <option value="실버 2">실버 2</option>
+                <option value="실버 3">실버 3</option>
+              </optgroup>
+              <optgroup label="아이언">
+                <option value="아이언 1">아이언 1</option>
+                <option value="아이언 2">아이언 2</option>
+                <option value="아이언 3">아이언 3</option>
+              </optgroup>
+              <optgroup label="브론즈">
+                <option value="브론즈 1">브론즈 1</option>
+                <option value="브론즈 2">브론즈 2</option>
+                <option value="브론즈 3">브론즈 3</option>
+              </optgroup>
+              <optgroup label="브래스">
+                <option value="브래스 1">브래스 1</option>
+                <option value="브래스 2">브래스 2</option>
+                <option value="브래스 3">브래스 3</option>
+              </optgroup>
+              <option value="언랭크">언랭크</option>
+            </select>
+            <p class="muted small">숫자가 낮을수록 더 높은 티어입니다.</p>
+          </div>
+          <button type="submit" class="primary-button">플레이어 계정 생성</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+    <script src="/scripts.js" defer></script>
+  </body>
+</html>

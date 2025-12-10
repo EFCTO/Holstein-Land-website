@@ -1,0 +1,248 @@
+[
+  {
+    "id": "t-mhz57dvz-gbvxwp",
+    "name": "1",
+    "startTime": "2025-11-15T02:40",
+    "status": "live",
+    "result": null,
+    "streamLinks": {
+      "withgo": "https://aa.com",
+      "soop": "https://aa.com"
+    },
+    "mapPool": [
+      "단장의 골목",
+      "두 해변",
+      "랑그로",
+      "볼로냐",
+      "빌라 피오레",
+      "세무아",
+      "숲속 교차로",
+      "앙고빌 농장",
+      "자발 오솔길",
+      "정원",
+      "타란토 해안",
+      "토스카나 포도밭",
+      "튀니지로 가는 길",
+      "파치노 교착점",
+      "페몽빌"
+    ],
+    "matches": [
+      {
+        "id": "match-mhz57dvz-rivmp3",
+        "round": "1",
+        "scheduled": "2025-11-15T02:40",
+        "players": [
+          {
+            "accountId": "GOC3",
+            "displayName": "GOC3",
+            "ready": true,
+            "readyAt": "2025-11-14T17:39:31.308Z"
+          },
+          {
+            "accountId": "GOC4",
+            "displayName": "GOC4",
+            "ready": true,
+            "readyAt": "2025-11-14T17:39:33.077Z"
+          }
+        ],
+        "map": "랑그로",
+        "mapDecidedAt": "2025-11-14T17:39:33.077Z",
+        "phase": "locked",
+        "selections": {
+          "GOC3": {
+            "faction": "미국",
+            "battlegroups": [
+              "미국::기갑 전투단",
+              "미국::고급 보병 전투단",
+              "미국::이탈리아 파르티잔 전투단"
+            ],
+            "confirmed": true,
+            "confirmedAt": "2025-11-14T17:40:02.271Z"
+          },
+          "GOC4": {
+            "faction": "영국",
+            "battlegroups": [
+              "영국::영국 중기갑 전투단",
+              "영국::영국 공군 및 해군 전투단",
+              "영국::캐나다 충격군 전투단"
+            ],
+            "confirmed": true,
+            "confirmedAt": "2025-11-14T17:40:13.425Z"
+          }
+        },
+        "bans": {
+          "GOC3": [
+            "영국::인도 포병 전투단",
+            "미국::중화기 전투단",
+            "국방::기계화 전투단",
+            "아프리카::전장 첩보 전투단"
+          ],
+          "GOC4": [
+            "영국::영국 공군 및 해군 전투단",
+            "미국::공수 전투단",
+            "국방::기계화 전투단",
+            "아프리카::전장 첩보 전투단"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "t-min1obkg-7lmvsa",
+    "name": "GOC",
+    "startTime": "2025-12-01T20:07",
+    "status": "live",
+    "result": null,
+    "streamLinks": {
+      "withgo": "https://chzzk.com/adaadd/",
+      "soop": "https://chzzk.com/adaadd/"
+    },
+    "mapPool": [
+      "단장의 골목",
+      "두 해변",
+      "랑그로",
+      "볼로냐",
+      "빌라 피오레",
+      "세무아",
+      "숲속 교차로",
+      "앙고빌 농장",
+      "자발 오솔길",
+      "정원",
+      "타란토 해안",
+      "토스카나 포도밭",
+      "튀니지로 가는 길",
+      "파치노 교착점",
+      "페몽빌"
+    ],
+    "matches": [
+      {
+        "id": "match-min1obkg-2c6v2a",
+        "round": "1",
+        "scheduled": "2025-12-01T20:07",
+        "players": [
+          {
+            "accountId": "GOC3",
+            "displayName": "GOC3",
+            "ready": true,
+            "readyAt": "2025-12-10T08:28:40.905Z"
+          },
+          {
+            "accountId": "GOC4",
+            "displayName": "GOC4",
+            "ready": true,
+            "readyAt": "2025-12-10T08:29:12.276Z"
+          }
+        ],
+        "map": "숲속 교차로",
+        "mapDecidedAt": "2025-12-10T08:29:12.276Z",
+        "phase": "banning",
+        "selections": {
+          "GOC3": {
+            "faction": null,
+            "battlegroups": [],
+            "confirmed": false,
+            "confirmedAt": null
+          },
+          "GOC4": {
+            "faction": null,
+            "battlegroups": [],
+            "confirmed": false,
+            "confirmedAt": null
+          }
+        },
+        "bans": {
+          "GOC3": [],
+          "GOC4": []
+        }
+      }
+    ]
+  },
+  {
+    "id": "t-min1q295-j73loz",
+    "name": "1",
+    "startTime": "2025-12-01T20:09",
+    "status": "live",
+    "result": null,
+    "streamLinks": {
+      "withgo": "https://chzzk.com/adaadd/",
+      "soop": "https://chzzk.com/adaadd/"
+    },
+    "mapPool": [
+      "단장의 골목",
+      "두 해변",
+      "랑그로",
+      "볼로냐",
+      "빌라 피오레",
+      "세무아",
+      "숲속 교차로",
+      "앙고빌 농장",
+      "자발 오솔길",
+      "정원",
+      "타란토 해안",
+      "토스카나 포도밭",
+      "튀니지로 가는 길",
+      "파치노 교착점",
+      "페몽빌"
+    ],
+    "matches": [
+      {
+        "id": "match-min1q295-sek9p2",
+        "round": "경기",
+        "scheduled": "2025-12-01T20:09",
+        "players": [
+          {
+            "accountId": "GOC3",
+            "displayName": "GOC3",
+            "ready": true,
+            "readyAt": "2025-12-01T11:09:00.146Z"
+          },
+          {
+            "accountId": "GOC4",
+            "displayName": "GOC4",
+            "ready": true,
+            "readyAt": "2025-12-01T11:08:58.812Z"
+          }
+        ],
+        "map": "정원",
+        "mapDecidedAt": "2025-12-01T11:09:00.146Z",
+        "phase": "locked",
+        "selections": {
+          "GOC3": {
+            "faction": "미국",
+            "battlegroups": [
+              "미국::공수 전투단",
+              "미국::기갑 전투단",
+              "미국::특수 작전 전투단"
+            ],
+            "confirmed": true,
+            "confirmedAt": "2025-12-01T11:10:03.878Z"
+          },
+          "GOC4": {
+            "faction": "영국",
+            "battlegroups": [
+              "영국::폴란드 기병 전투단",
+              "영국::캐나다 충격군 전투단",
+              "영국::오스트레일리아 수비 전투단"
+            ],
+            "confirmed": true,
+            "confirmedAt": "2025-12-01T11:10:19.128Z"
+          }
+        },
+        "bans": {
+          "GOC3": [
+            "영국::인도 포병 전투단",
+            "미국::공수 전투단",
+            "국방::기계화 전투단",
+            "아프리카::기갑 지원 전투단"
+          ],
+          "GOC4": [
+            "영국::영국 중기갑 전투단",
+            "미국::중화기 전투단",
+            "국방::이탈리아 해안 전투단",
+            "아프리카::크릭스마리네 전투단"
+          ]
+        }
+      }
+    ]
+  }
+]

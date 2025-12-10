@@ -1,0 +1,68 @@
+[
+  {
+    "accountId": "GOCGOC",
+    "displayName": "GOCGOC",
+    "role": "viewer",
+    "password": "s2$83f0cc89b2800f0d095482775851c940$1c43c7b26d57ee8b935bf12dc2c17c8d099d796232c01228031799a846b5987a428ad06d2b089c296ee1a1452562035a20f6d1dc646fa6b909d023cab4989b9a",
+    "email": "atom-0728@naver.com",
+    "elo": null,
+    "seed": false
+  },
+  {
+    "accountId": "GOC3",
+    "displayName": "GOC3",
+    "role": "player",
+    "password": "s2$919e93f4aea383c0ca8527f4ce24f902$8f111e242b03ba0e19d9eac5ae15dfbebf19b85b8481325ba86308731aa47437c99964f1daa8a46cb352d9c85c1236e8af97830070f7e49bdeefda3d2a991f8a",
+    "email": "",
+    "elo": null,
+    "rank": "언랭크",
+    "seed": false
+  },
+  {
+    "accountId": "GOC4",
+    "displayName": "GOC4",
+    "role": "player",
+    "password": "s2$122a3e0e13d27676835da1afef10dce1$f8c4223d90e2e468475e2538346e1cc91dcfc89a002aeee0be2b897a196dde36fd4a49ad02260120167598b420ae04925dbc27122e77e04de419c7b31d4fe293",
+    "email": "",
+    "elo": null,
+    "rank": "언랭크",
+    "seed": false
+  },
+  {
+    "accountId": "admin",
+    "displayName": "Broadcast Admin",
+    "role": "admin",
+    "password": "s2$d4c529f8e855a800e79416af38590a64$b6e05993e2883008e37b7d40f0547778a7de7cf13c766d513d3c6cd372d8e4bd1d3d6e0cd9addc907d6827a9f5dcea87a46170d8ca80c7dcc1bfef769c2c519a",
+    "email": "",
+    "elo": null,
+    "seed": false
+  },
+  {
+    "accountId": "GOC",
+    "displayName": "GOC",
+    "role": "viewer",
+    "password": "s2$da90ba2678a433f8d7bd282323bcbbc7$796689b26dfabc007b71afcbefec3e6b772495415d06824524b08db73389f8cc94a198a73690d769fc4d7f7ea40812a3c41823e32469f779dc437338f0ec3f08",
+    "email": "atom-0728@naver.com",
+    "elo": null,
+    "seed": false
+  },
+  {
+    "accountId": "asdf1234",
+    "displayName": "asdf1234",
+    "role": "player",
+    "password": "s2$7f8b4b732a60c61da417e54a11aa0153$659566c1d580fd24c60d332a4385701f58bc10cac2fb3250305f565bd80b97522c3111a15c9ce06ec1be4dacb4895ce03dec4bddac85405538af318e598c80bd",
+    "email": "",
+    "elo": null,
+    "rank": "언랭크",
+    "seed": false
+  },
+  {
+    "accountId": "Tester",
+    "displayName": "Tester",
+    "role": "player",
+    "password": "s2$697c4c500cc12a6b4c00d1eab93dca21$9b4ba857dea376a5ee97e0dcf452b217f0581b209ad7c74f8bfddc15c39328d85a3da4acf3ad249754278724a9e60404a39b2cc52e7839f746c3a4ef19748f3d",
+    "email": "",
+    "rank": "챌린저 1",
+    "seed": false
+  }
+]

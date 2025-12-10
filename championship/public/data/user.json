@@ -1,0 +1,31 @@
+[
+  {
+    "accountId": "GOCGOC",
+    "displayName": "GOCGOC",
+    "role": "viewer",
+    "password": "1234",
+    "email": "atom-0728@naver.com",
+    "elo": null,
+    "seed": false
+  },
+  {
+    "accountId": "GOC3",
+    "displayName": "GOC3",
+    "role": "player",
+    "password": "1234",
+    "email": "",
+    "elo": null,
+    "rank": "언랭크",
+    "seed": false
+  },
+  {
+    "accountId": "GOC4",
+    "displayName": "GOC4",
+    "role": "player",
+    "password": "1234",
+    "email": "",
+    "elo": null,
+    "rank": "언랭크",
+    "seed": false
+  }
+]

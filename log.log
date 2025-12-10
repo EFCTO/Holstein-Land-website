@@ -1,0 +1,124 @@
+Process exited with code 1
+C:\Program Files\nodejs\node.exe --experimental-network-inspection .\web.js
+[2025-11-14T17:14:36.013Z] [INFO] Server listening {"host":"0.0.0.0","port":8001}
+[2025-11-14T17:14:36.016Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:14:39.739Z] [INFO] Incoming request {"method":"GET","url":"/"}
+[2025-11-14T17:14:39.743Z] [INFO] Request completed {"method":"GET","url":"/","status":304,"durationMs":4}
+[2025-11-14T17:14:39.782Z] [INFO] Incoming request {"method":"GET","url":"/styles.css"}
+[2025-11-14T17:14:39.783Z] [INFO] Incoming request {"method":"GET","url":"/scripts.js"}
+[2025-11-14T17:14:39.784Z] [INFO] Request completed {"method":"GET","url":"/styles.css","status":304,"durationMs":2}
+[2025-11-14T17:14:39.789Z] [INFO] Request completed {"method":"GET","url":"/scripts.js","status":200,"durationMs":6}
+[2025-11-14T17:14:39.803Z] [INFO] Incoming request {"method":"GET","url":"/api/users"}
+[2025-11-14T17:14:39.804Z] [INFO] Incoming request {"method":"GET","url":"/api/tournaments"}
+[2025-11-14T17:14:39.807Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:14:39.808Z] [INFO] Fetched users {"count":5}
+[2025-11-14T17:14:39.810Z] [INFO] Request completed {"method":"GET","url":"/api/users","status":200,"durationMs":7}
+[2025-11-14T17:14:39.811Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","size":1864}
+[2025-11-14T17:14:39.811Z] [INFO] Fetched tournaments {"count":1}
+[2025-11-14T17:14:39.812Z] [INFO] Request completed {"method":"GET","url":"/api/tournaments","status":200,"durationMs":8}
+[2025-11-14T17:14:39.828Z] [INFO] Incoming request {"method":"GET","url":"/favicon.png"}
+[2025-11-14T17:14:39.830Z] [INFO] Request completed {"method":"GET","url":"/favicon.png","status":304,"durationMs":2}
+[2025-11-14T17:14:39.833Z] [INFO] Incoming request {"method":"GET","url":"/api/me"}
+[2025-11-14T17:14:39.836Z] [INFO] Request completed {"method":"GET","url":"/api/me","status":200,"durationMs":3}
+[2025-11-14T17:14:39.842Z] [INFO] Incoming request {"method":"GET","url":"/api/events"}
+[2025-11-14T17:14:39.844Z] [INFO] SSE client connected
+[2025-11-14T17:14:39.847Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:14:39.848Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","size":1864}
+[2025-11-14T17:14:48.920Z] [INFO] Incoming request {"method":"POST","url":"/api/login"}
+[2025-11-14T17:14:48.922Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:14:48.980Z] [INFO] 로그인 성공 {"accountId":"admin","role":"admin"}
+[2025-11-14T17:14:48.982Z] [INFO] Request completed {"method":"POST","url":"/api/login","status":200,"durationMs":62}
+[2025-11-14T17:14:53.488Z] [INFO] Incoming request {"method":"GET","url":"/"}
+[2025-11-14T17:14:53.489Z] [INFO] Request completed {"method":"GET","url":"/","status":304,"durationMs":1}
+[2025-11-14T17:14:53.516Z] [INFO] Incoming request {"method":"GET","url":"/styles.css"}
+[2025-11-14T17:14:53.518Z] [INFO] Incoming request {"method":"GET","url":"/scripts.js"}
+[2025-11-14T17:14:53.519Z] [INFO] Request completed {"method":"GET","url":"/styles.css","status":304,"durationMs":3}
+[2025-11-14T17:14:53.522Z] [INFO] Request completed {"method":"GET","url":"/scripts.js","status":200,"durationMs":4}
+[2025-11-14T17:14:53.554Z] [INFO] Incoming request {"method":"GET","url":"/api/users"}
+[2025-11-14T17:14:53.555Z] [INFO] Incoming request {"method":"GET","url":"/api/tournaments"}
+[2025-11-14T17:14:53.557Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:14:53.558Z] [INFO] Fetched users {"count":5}
+[2025-11-14T17:14:53.558Z] [INFO] Request completed {"method":"GET","url":"/api/users","status":200,"durationMs":4}
+[2025-11-14T17:14:53.559Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","size":1864}
+[2025-11-14T17:14:53.559Z] [INFO] Fetched tournaments {"count":1}
+[2025-11-14T17:14:53.560Z] [INFO] Request completed {"method":"GET","url":"/api/tournaments","status":200,"durationMs":5}
+[2025-11-14T17:14:53.572Z] [INFO] Incoming request {"method":"GET","url":"/api/me"}
+[2025-11-14T17:14:53.575Z] [INFO] Request completed {"method":"GET","url":"/api/me","status":200,"durationMs":3}
+[2025-11-14T17:14:53.576Z] [INFO] Incoming request {"method":"GET","url":"/favicon.png"}
+[2025-11-14T17:14:53.578Z] [INFO] Request completed {"method":"GET","url":"/favicon.png","status":304,"durationMs":2}
+[2025-11-14T17:14:53.578Z] [INFO] Incoming request {"method":"GET","url":"/api/events"}
+[2025-11-14T17:14:53.580Z] [INFO] SSE client connected
+[2025-11-14T17:14:53.583Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:14:53.584Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","size":1864}
+[2025-11-14T17:14:58.807Z] [INFO] Incoming request {"method":"POST","url":"/api/login"}
+[2025-11-14T17:14:58.809Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:14:58.877Z] [INFO] 로그인 성공 {"accountId":"GOC3","role":"player"}
+[2025-11-14T17:14:58.879Z] [INFO] Request completed {"method":"POST","url":"/api/login","status":200,"durationMs":72}
+[2025-11-14T17:14:58.924Z] [INFO] Incoming request {"method":"GET","url":"/%EC%A0%84%ED%88%AC%EB%8B%A8.png"}
+[2025-11-14T17:14:58.925Z] [INFO] Incoming request {"method":"GET","url":"/map.png"}
+[2025-11-14T17:14:58.926Z] [INFO] Request completed {"method":"GET","url":"/%EC%A0%84%ED%88%AC%EB%8B%A8.png","status":304,"durationMs":2}
+[2025-11-14T17:14:58.927Z] [INFO] Request completed {"method":"GET","url":"/map.png","status":304,"durationMs":2}
+[2025-11-14T17:15:23.439Z] [INFO] Incoming request {"method":"PUT","url":"/api/tournaments"}
+[2025-11-14T17:15:23.441Z] [INFO] Incoming request {"method":"GET","url":"/%EC%A0%84%ED%88%AC%EB%8B%A8.png"}
+[2025-11-14T17:15:23.442Z] [INFO] Request completed {"method":"GET","url":"/%EC%A0%84%ED%88%AC%EB%8B%A8.png","status":304,"durationMs":1}
+[2025-11-14T17:15:23.444Z] [DEBUG] Wrote JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","recordCount":2}
+[2025-11-14T17:15:23.444Z] [DEBUG] Emitting data update {"type":"tournaments","size":2}
+[2025-11-14T17:15:23.444Z] [INFO] Saved tournaments {"count":2}
+[2025-11-14T17:15:23.445Z] [INFO] Request completed {"method":"PUT","url":"/api/tournaments","status":204,"durationMs":6}
+[2025-11-14T17:15:27.941Z] [INFO] Incoming request {"method":"POST","url":"/api/logout"}
+[2025-11-14T17:15:27.943Z] [INFO] 로그아웃 처리
+[2025-11-14T17:15:27.944Z] [INFO] Request completed {"method":"POST","url":"/api/logout","status":204,"durationMs":3}
+[2025-11-14T17:15:33.238Z] [INFO] Incoming request {"method":"POST","url":"/api/login"}
+[2025-11-14T17:15:33.240Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:15:33.304Z] [INFO] 로그인 성공 {"accountId":"GOC4","role":"player"}
+[2025-11-14T17:15:33.307Z] [INFO] Request completed {"method":"POST","url":"/api/login","status":200,"durationMs":69}
+[2025-11-14T17:15:38.958Z] [INFO] Incoming request {"method":"PUT","url":"/api/tournaments"}
+[2025-11-14T17:15:38.960Z] [DEBUG] Wrote JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","recordCount":2}
+[2025-11-14T17:15:38.961Z] [DEBUG] Emitting data update {"type":"tournaments","size":2}
+[2025-11-14T17:15:38.961Z] [INFO] Saved tournaments {"count":2}
+[2025-11-14T17:15:38.963Z] [INFO] Request completed {"method":"PUT","url":"/api/tournaments","status":204,"durationMs":5}
+[2025-11-14T17:15:39.999Z] [INFO] Incoming request {"method":"GET","url":"/map.png"}
+[2025-11-14T17:15:40.000Z] [INFO] Request completed {"method":"GET","url":"/map.png","status":304,"durationMs":1}
+[2025-11-14T17:15:41.110Z] [INFO] Incoming request {"method":"PUT","url":"/api/tournaments"}
+[2025-11-14T17:15:41.113Z] [DEBUG] Wrote JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","recordCount":2}
+[2025-11-14T17:15:41.113Z] [DEBUG] Emitting data update {"type":"tournaments","size":2}
+[2025-11-14T17:15:41.113Z] [INFO] Saved tournaments {"count":2}
+[2025-11-14T17:15:41.114Z] [INFO] Request completed {"method":"PUT","url":"/api/tournaments","status":204,"durationMs":4}
+[2025-11-14T17:15:41.116Z] [INFO] Incoming request {"method":"PUT","url":"/api/tournaments"}
+[2025-11-14T17:15:41.120Z] [DEBUG] Wrote JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","recordCount":2}
+[2025-11-14T17:15:41.120Z] [DEBUG] Emitting data update {"type":"tournaments","size":2}
+[2025-11-14T17:15:41.120Z] [INFO] Saved tournaments {"count":2}
+[2025-11-14T17:15:41.121Z] [INFO] Request completed {"method":"PUT","url":"/api/tournaments","status":204,"durationMs":5}
+[2025-11-14T17:15:46.116Z] [INFO] Incoming request {"method":"PUT","url":"/api/tournaments"}
+[2025-11-14T17:15:46.118Z] [DEBUG] Wrote JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","recordCount":2}
+[2025-11-14T17:15:46.118Z] [DEBUG] Emitting data update {"type":"tournaments","size":2}
+[2025-11-14T17:15:46.119Z] [INFO] Saved tournaments {"count":2}
+[2025-11-14T17:15:46.119Z] [INFO] Request completed {"method":"PUT","url":"/api/tournaments","status":204,"durationMs":3}
+[2025-11-14T17:16:02.696Z] [INFO] Incoming request {"method":"GET","url":"/"}
+[2025-11-14T17:16:02.698Z] [INFO] Request completed {"method":"GET","url":"/","status":304,"durationMs":2}
+[2025-11-14T17:16:02.703Z] [INFO] SSE client disconnected
+[2025-11-14T17:16:02.728Z] [INFO] Incoming request {"method":"GET","url":"/styles.css"}
+[2025-11-14T17:16:02.730Z] [INFO] Request completed {"method":"GET","url":"/styles.css","status":304,"durationMs":2}
+[2025-11-14T17:16:02.734Z] [INFO] Incoming request {"method":"GET","url":"/scripts.js"}
+[2025-11-14T17:16:02.736Z] [INFO] Request completed {"method":"GET","url":"/scripts.js","status":304,"durationMs":2}
+[2025-11-14T17:16:02.741Z] [INFO] Incoming request {"method":"GET","url":"/api/users"}
+[2025-11-14T17:16:02.743Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:16:02.744Z] [INFO] Fetched users {"count":5}
+[2025-11-14T17:16:02.744Z] [INFO] Request completed {"method":"GET","url":"/api/users","status":200,"durationMs":3}
+[2025-11-14T17:16:02.747Z] [INFO] Incoming request {"method":"GET","url":"/api/tournaments"}
+[2025-11-14T17:16:02.749Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","size":3420}
+[2025-11-14T17:16:02.749Z] [INFO] Fetched tournaments {"count":2}
+[2025-11-14T17:16:02.750Z] [INFO] Request completed {"method":"GET","url":"/api/tournaments","status":200,"durationMs":3}
+[2025-11-14T17:16:02.759Z] [INFO] Incoming request {"method":"GET","url":"/favicon.png"}
+[2025-11-14T17:16:02.761Z] [INFO] Request completed {"method":"GET","url":"/favicon.png","status":304,"durationMs":2}
+[2025-11-14T17:16:02.762Z] [INFO] Incoming request {"method":"GET","url":"/api/me"}
+[2025-11-14T17:16:02.763Z] [INFO] 세션 확인 {"accountId":"GOC3","role":"player"}
+[2025-11-14T17:16:02.765Z] [INFO] Request completed {"method":"GET","url":"/api/me","status":200,"durationMs":3}
+[2025-11-14T17:16:02.774Z] [INFO] Incoming request {"method":"GET","url":"/%EC%A0%84%ED%88%AC%EB%8B%A8.png"}
+[2025-11-14T17:16:02.775Z] [INFO] Request completed {"method":"GET","url":"/%EC%A0%84%ED%88%AC%EB%8B%A8.png","status":304,"durationMs":1}
+[2025-11-14T17:16:02.784Z] [INFO] Incoming request {"method":"GET","url":"/api/events"}
+[2025-11-14T17:16:02.785Z] [INFO] SSE client connected
+[2025-11-14T17:16:02.789Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\user.json","size":1648}
+[2025-11-14T17:16:02.790Z] [DEBUG] Read JSON file {"filePath":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\data\\contest.json","size":3420}
+[2025-11-14T17:16:03.039Z] [INFO] Incoming request {"method":"GET","url":"/map.png"}
+[2025-11-14T17:16:03.042Z] [INFO] Request completed {"method":"GET","url":"/map.png","status":304,"durationMs":3}

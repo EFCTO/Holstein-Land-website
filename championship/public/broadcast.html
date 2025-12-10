@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko" data-broadcast="true">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>COH3 Broadcast</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-broadcast="true">
+    <header class="app-header">
+      <div class="container header-inner">
+        <div class="brand-block">
+          <p class="tagline">Broadcast Overlay</p>
+          <h1>Championship Of Heroes - Broadcaster</h1>
+          <p class="subtext">밴/픽과 확정 상황을 실시간으로 표시하는 전용 화면입니다.</p>
+        </div>
+        <div class="broadcast-status-box">
+          <p class="muted small" id="broadcast-last-update">데이터 준비 중...</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>중계 전용 화면</h2>
+          <p>표시할 토너먼트와 매치를 선택하면 실시간으로 갱신됩니다.</p>
+        </div>
+        <div class="broadcast-controls">
+          <div class="form-row">
+            <label for="broadcast-tournament">토너먼트 선택</label>
+            <select id="broadcast-tournament"></select>
+          </div>
+          <div class="form-row">
+            <label for="broadcast-match">매치 선택</label>
+            <select id="broadcast-match"></select>
+          </div>
+          <div class="broadcast-actions">
+            <button type="button" class="secondary-button compact" id="broadcast-refresh">
+              새로고침
+            </button>
+          </div>
+        </div>
+        <div id="broadcast-board" class="broadcast-board">
+          <p class="empty-state">불러온 매치가 없습니다.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="/scripts.js" defer></script>
+    <script src="/broadcast.js" defer></script>
+  </body>
+</html>
