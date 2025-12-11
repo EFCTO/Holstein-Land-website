@@ -14,7 +14,9 @@ router.get('/tournaments', async (_req, res) => {
     res.json(list);
   } catch (error) {
     logError('Failed to read tournaments', { message: error.message });
-    res.status(500).json({ message: '토너먼트를 불러오지 못했습니다.' });
+    res.status(500).json({
+      message: '토너먼트 데이터를 불러오는 중 오류가 발생했습니다.',
+    });
   }
 });
 
@@ -26,8 +28,11 @@ router.put('/tournaments', authRequired(), async (req, res) => {
     res.status(204).end();
   } catch (error) {
     logError('Failed to save tournaments', { message: error.message });
-    res.status(500).json({ message: '토너먼트를 저장하지 못했습니다.' });
+    res.status(500).json({
+      message: '토너먼트 데이터를 저장하는 중 오류가 발생했습니다.',
+    });
   }
 });
 
 module.exports = router;
+

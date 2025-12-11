@@ -13,10 +13,14 @@
         <div class="brand-block">
           <p class="tagline">Broadcast Overlay</p>
           <h1>Championship Of Heroes - Broadcaster</h1>
-          <p class="subtext">밴/픽과 확정 상황을 실시간으로 표시하는 전용 화면입니다.</p>
+          <p class="subtext">
+            방송용 오버레이와 경기 정보를 제어하는 브로드캐스터 전용 페이지입니다.
+          </p>
         </div>
         <div class="broadcast-status-box">
-          <p class="muted small" id="broadcast-last-update">데이터 준비 중...</p>
+          <p class="muted small" id="broadcast-last-update">
+            업데이트 정보를 불러오는 중입니다...
+          </p>
         </div>
       </div>
     </header>
@@ -24,8 +28,11 @@
     <main class="container">
       <section class="panel">
         <div class="panel-heading">
-          <h2>중계 전용 화면</h2>
-          <p>표시할 토너먼트와 매치를 선택하면 실시간으로 갱신됩니다.</p>
+          <h2>브로드캐스터 제어 패널</h2>
+          <p>
+            사용할 토너먼트와 경기를 선택하면, 해당 정보를 방송 화면용 보드에
+            표시합니다.
+          </p>
         </div>
         <div class="broadcast-controls">
           <div class="form-row">
@@ -33,17 +40,21 @@
             <select id="broadcast-tournament"></select>
           </div>
           <div class="form-row">
-            <label for="broadcast-match">매치 선택</label>
+            <label for="broadcast-match">경기 선택</label>
             <select id="broadcast-match"></select>
           </div>
           <div class="broadcast-actions">
-            <button type="button" class="secondary-button compact" id="broadcast-refresh">
+            <button
+              type="button"
+              class="secondary-button compact"
+              id="broadcast-refresh"
+            >
               새로고침
             </button>
           </div>
         </div>
         <div id="broadcast-board" class="broadcast-board">
-          <p class="empty-state">불러온 매치가 없습니다.</p>
+          <p class="empty-state">선택된 경기가 없습니다.</p>
         </div>
       </section>
     </main>
@@ -51,4 +62,5 @@
     <script src="/scripts.js" defer></script>
     <script src="/broadcast.js" defer></script>
   </body>
-</html>
+  </html>
+
