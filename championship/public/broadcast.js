@@ -25,6 +25,9 @@
   const renderViewerSide = typeof shared.renderViewerSide === 'function'
     ? shared.renderViewerSide
     : null;
+  const mapImageForName = typeof shared.mapImageForName === 'function'
+    ? shared.mapImageForName
+    : () => '/images/maps/map.png';
 
   const state = {
     tournaments: [],
@@ -187,6 +190,7 @@
     }
 
     dom.board.innerHTML = renderBroadcastBoard(tournament, match);
+    enhanceBroadcastBoard(tournament, match);
   }
 
   function renderBroadcastBoard(tournament, match) {
@@ -228,6 +232,38 @@
         </div>
       </article>
     `;
+  }
+
+  function enhanceBroadcastBoard(tournament, match) {
+    if (!dom.board) return;
+    const root = dom.board.querySelector('.match-card--broadcast');
+    if (!root) return;
+
+    const mapContainer = root.querySelector('.broadcast-map');
+    if (mapContainer) {
+      const mapName = match.map || '毵?於旍波 ?€旮?';
+      const src = match.map ? mapImageForName(match.map) : mapImageForName(null);
+      mapContainer.innerHTML = `
+        <strong>毵?</strong>
+        <div class="broadcast-map__content">
+          <img class="broadcast-map__image" src="${src}" alt="${mapName} 毵?" />
+          <span class="broadcast-map__name">${mapName}</span>
+        </div>
+      `;
+    }
+
+    const result = tournament.result || null;
+    if (result) {
+      const footer = root.querySelector('.broadcast-footer');
+      if (!footer) return;
+      const resultEl = document.createElement('div');
+      resultEl.className = 'broadcast-result';
+      resultEl.innerHTML = `
+        <strong>臧膘</strong>
+        <span class="broadcast-result__text">勝??: ${result.winner?.displayName || '-'} · ?€??: ${result.loser?.displayName || '-'}</span>
+      `;
+      footer.appendChild(resultEl);
+    }
   }
 
   function renderBroadcastSide(player, bans, selection) {

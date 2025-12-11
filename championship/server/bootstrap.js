@@ -40,3 +40,5 @@ async function bootstrap() {
 }
 
 module.exports = bootstrap;
+
+console.log('Bootstrap module loaded');

@@ -5,6 +5,20 @@ const { EVENT_PING_INTERVAL_MS, USERS_FILE, TOURNAMENTS_FILE } = require('../con
 const { dataEvents, readJsonFile, publicUser } = require('../services/dataStore');
 const { info, error: logError } = require('../utils/logger');
 
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded.length > 0) {
+    return forwarded.split(',')[0].trim();
+  }
+  return (
+    req.ip ||
+    req.connection?.remoteAddress ||
+    req.socket?.remoteAddress ||
+    (req.connection && req.connection.socket && req.connection.socket.remoteAddress) ||
+    null
+  );
+}
+
 router.get('/events', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -22,7 +36,10 @@ router.get('/events', (req, res) => {
     send({ type: 'ping', timestamp: Date.now() });
   }, EVENT_PING_INTERVAL_MS);
 
-  info('SSE client connected');
+  const ip = getClientIp(req);
+  const userAgent = req.headers['user-agent'] || null;
+
+  info('SSE client connected', { ip, userAgent });
   send({ type: 'connected', timestamp: Date.now() });
 
   Promise.all([
@@ -40,7 +57,7 @@ router.get('/events', (req, res) => {
   req.on('close', () => {
     clearInterval(heartbeat);
     dataEvents.off('update', handleUpdate);
-    info('SSE client disconnected');
+    info('SSE client disconnected', { ip });
   });
 });
 

@@ -1051,14 +1051,14 @@ function renderAdminTournaments() {
           <form class="stacked-form result-form" data-action="record-result" data-tournament-id="${tournament.id}">
             <h4>결과 기록</h4>
             <div class="form-row">
-              <label for="winner-${tournament.id}">우승자</label>
+              <label for="winner-${tournament.id}">승리자</label>
               <select id="winner-${tournament.id}" name="winner" required>
                 <option value="">플레이어 선택</option>
                 ${participantOptions}
               </select>
             </div>
             <div class="form-row">
-              <label for="loser-${tournament.id}">준우승자</label>
+              <label for="loser-${tournament.id}">패배자</label>
               <select id="loser-${tournament.id}" name="loser" required>
                 <option value="">플레이어 선택</option>
                 ${participantOptions}
@@ -1079,7 +1079,7 @@ function renderAdminTournaments() {
         : '<p class="muted small">등록된 경기가 없습니다.</p>';
 
       const resultSummary = tournament.result
-        ? `<p class="tournament-result">우승: ${tournament.result.winner.displayName} · 준우승: ${tournament.result.loser.displayName}</p>`
+        ? `<p class="tournament-result">승리: ${tournament.result.winner.displayName} · 패배: ${tournament.result.loser.displayName}</p>`
         : '';
 
       return `
@@ -1397,12 +1397,12 @@ function handleTournamentResultSubmit(formData, tournamentId) {
   const loserId = formData.get('loser')?.toString();
 
   if (!winnerId || !loserId) {
-    showToast('우승자와 준우승자를 모두 선택하세요.', 'error');
+    showToast('승리자와 패배자를 모두 선택하세요.', 'error');
     return;
   }
 
   if (winnerId === loserId) {
-    showToast('우승자와 준우승자는 서로 달라야 합니다.', 'error');
+    showToast('승리자와 패배자는 서로 달라야 합니다.', 'error');
     return;
   }
 
@@ -2153,5 +2153,7 @@ if (typeof window !== 'undefined') {
     normalizeTournament,
     BATTLEGROUP_MAP,
     getFactionName,
+    mapImageForName: (name) =>
+      (name && MAP_IMAGE_BY_NAME[name]) ? MAP_IMAGE_BY_NAME[name] : IMAGE_PATHS.map,
   };
 }

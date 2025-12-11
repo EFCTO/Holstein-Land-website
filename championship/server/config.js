@@ -44,3 +44,5 @@ module.exports = {
   MAX_EVENT_LISTENERS,
   IS_PROD,
 };
+
+console.log('Config module loaded');

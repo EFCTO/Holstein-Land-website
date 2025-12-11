@@ -46,4 +46,4 @@ bootstrap().catch((error) => {
 
 module.exports = server;
 
-
+console.log('Server module loaded');

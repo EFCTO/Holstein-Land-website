@@ -1,12 +1,12 @@
 {
-  "name": "withgo",
-  "private": true,
+  "name": "holstein-championship",
+  "version": "1.0.0",
+  "main": "championship/web.js",
   "scripts": {
-    "start": "node ./championship/web.js"
+    "start": "node championship/web.js"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.18.0",
-    "express": "^4.21.2",
-    "react": "^19.2.0"
+    "express": "^4.19.0",
+    "@google-cloud/storage": "^7.11.0"
   }
 }
