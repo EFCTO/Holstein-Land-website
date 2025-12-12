@@ -5,7 +5,7 @@ const { info, warn, error: logError } = require('./utils/logger');
 const MAX_BAN_PER_PLAYER = 4;
 const MAX_PICK_SELECTION = 3;
 
-// 밴/픽에서 사용할 전투단 ID (웹과 동일 포맷)
+// 웹 사이트와 동일한 전투단 ID 포맷 (진영::전투단 이름)
 const BATTLEGROUP_IDS = [
   '영국::인도 포병 전투단',
   '영국::영국 중기갑 전투단',
@@ -35,6 +35,39 @@ const BATTLEGROUP_IDS = [
 
 function formatBattlegroupId(id) {
   return typeof id === 'string' && id.length ? id : '미정';
+}
+
+function getFactionFromId(id) {
+  const [factionId] = String(id || '').split('::');
+  return factionId || null;
+}
+
+function getFactionIds() {
+  const set = new Set();
+  BATTLEGROUP_IDS.forEach((raw) => {
+    const factionId = getFactionFromId(raw);
+    if (factionId) {
+      set.add(factionId);
+    }
+  });
+  return Array.from(set);
+}
+
+function getBattlegroupsByFaction(factionId) {
+  if (!factionId) {
+    return [];
+  }
+  return BATTLEGROUP_IDS.filter((raw) => getFactionFromId(raw) === factionId);
+}
+
+function getPlayer(match, accountId) {
+  const players = Array.isArray(match.players) ? match.players : [];
+  return players.find((p) => p.accountId === accountId) || null;
+}
+
+function getOpponent(match, accountId) {
+  const players = Array.isArray(match.players) ? match.players : [];
+  return players.find((p) => p.accountId !== accountId) || null;
 }
 
 async function findMatchForCommand(tournamentInput, roundInput, playerInput) {
@@ -88,6 +121,25 @@ async function findMatchForCommand(tournamentInput, roundInput, playerInput) {
   return null;
 }
 
+function describePhase(phase) {
+  switch (phase) {
+    case 'waiting':
+      return '대기';
+    case 'ready-check':
+      return '준비 확인';
+    case 'map-selected':
+      return '맵 확정';
+    case 'banning':
+      return '밴 진행 중';
+    case 'picking':
+      return '픽 진행 중';
+    case 'locked':
+      return '확정됨';
+    default:
+      return '진행 중';
+  }
+}
+
 function buildTournamentEmbed(payload, EmbedBuilder) {
   const { tournament, match, focusAccountId } = payload;
   const players = Array.isArray(match.players) ? match.players : [];
@@ -99,7 +151,7 @@ function buildTournamentEmbed(payload, EmbedBuilder) {
       [
         `경기: ${vsLabel || '미정'}`,
         `맵: ${match.map || '미정'}`,
-        `상태: ${match.phase || '진행 중'}`,
+        `상태: ${describePhase(match.phase)}`,
       ].join('\n'),
     )
     .setColor(0x2b2d31);
@@ -110,11 +162,12 @@ function buildTournamentEmbed(payload, EmbedBuilder) {
     const picks = Array.isArray(selection?.battlegroups) ? selection.battlegroups : [];
     const name =
       player.accountId === focusAccountId
-        ? `${player.displayName} (요청 대상)`
+        ? `${player.displayName} (이 메시지로 조작 중)`
         : player.displayName;
     embed.addFields({
       name,
       value: [
+        `레디: ${player.ready ? '준비 완료' : '대기 중'}`,
         `밴: ${bans.length ? bans.map(formatBattlegroupId).join(', ') : '없음'}`,
         `픽: ${picks.length ? picks.map(formatBattlegroupId).join(', ') : '없음'}`,
         `픽 확정: ${selection?.confirmed ? '예' : '아니오'}`,
@@ -144,7 +197,7 @@ function buildTournamentEmbed(payload, EmbedBuilder) {
   return embed;
 }
 
-async function updateMatchByIds(tournamentId, matchId, updater) {
+async function updateMatch(tournamentId, matchId, updater) {
   const tournaments = await readJsonFile(TOURNAMENTS_FILE, []);
   const list = Array.isArray(tournaments) ? tournaments : [];
 
@@ -179,46 +232,103 @@ function buildControlComponents(payload, builders) {
   const { ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle } = builders;
 
   const selection = match.selections?.[focusAccountId] || null;
+  const player = getPlayer(match, focusAccountId);
+  const phase = match.phase || 'waiting';
 
-  const banRow = new ActionRowBuilder().addComponents(
-    new StringSelectMenuBuilder()
-      .setCustomId(`ban:${tournament.id}:${match.id}:${focusAccountId}`)
-      .setPlaceholder('밴 전투단 선택 (최대 4개)')
-      .setMinValues(1)
-      .setMaxValues(MAX_BAN_PER_PLAYER)
-      .addOptions(
-        BATTLEGROUP_IDS.map((id) => ({
-          label: id,
-          value: id,
-        })),
-      ),
-  );
+  const rows = [];
 
-  const pickRow = new ActionRowBuilder().addComponents(
-    new StringSelectMenuBuilder()
-      .setCustomId(`pick:${tournament.id}:${match.id}:${focusAccountId}`)
-      .setPlaceholder('픽 전투단 선택 (최대 3개)')
-      .setMinValues(1)
-      .setMaxValues(MAX_PICK_SELECTION)
-      .addOptions(
-        BATTLEGROUP_IDS.map((id) => ({
-          label: id,
-          value: id,
-        })),
-      ),
-  );
+  // 1) 레디 버튼 (waiting / ready-check 단계에서만 활성)
+  if (player) {
+    const readyDisabled =
+      player.ready || (phase !== 'waiting' && phase !== 'ready-check');
+    const readyRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`ready:${tournament.id}:${match.id}:${focusAccountId}`)
+        .setLabel('준비 완료')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(readyDisabled),
+    );
+    rows.push(readyRow);
+  }
 
-  const buttonRow = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId(`confirm:${tournament.id}:${match.id}:${focusAccountId}`)
-      .setLabel('픽 확정')
-      .setStyle(ButtonStyle.Primary)
-      .setDisabled(
-        !selection || !Array.isArray(selection.battlegroups) || selection.battlegroups.length === 0,
-      ),
-  );
+  // 2) 밴 단계: phase === 'banning' 일 때만 노출
+  if (phase === 'banning') {
+    const banRow = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId(`ban:${tournament.id}:${match.id}:${focusAccountId}`)
+        .setPlaceholder('밴 전투단 선택 (최대 4개)')
+        .setMinValues(1)
+        .setMaxValues(MAX_BAN_PER_PLAYER)
+        .addOptions(
+          BATTLEGROUP_IDS.map((id) => ({
+            label: id,
+            value: id,
+          })),
+        ),
+    );
+    rows.push(banRow);
+  }
 
-  return [banRow, pickRow, buttonRow];
+  // 3) 픽 단계: phase === 'picking' 이거나, locked 이지만 아직 내 픽이 확정되지 않은 경우
+  const canPick =
+    phase === 'picking' || (phase === 'locked' && selection && !selection.confirmed);
+
+  if (canPick && player) {
+    const factionIds = getFactionIds();
+    const factionRow = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId(`faction:${tournament.id}:${match.id}:${focusAccountId}`)
+        .setPlaceholder(selection?.faction ? selection.faction : '진영 선택')
+        .setMinValues(1)
+        .setMaxValues(1)
+        .addOptions(
+          factionIds.map((id) => ({
+            label: id,
+            value: id,
+            default: selection?.faction === id,
+          })),
+        ),
+    );
+    rows.push(factionRow);
+
+    const picksDisabled = !selection || !selection.faction;
+    const pickRow = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId(`pick:${tournament.id}:${match.id}:${focusAccountId}`)
+        .setPlaceholder('전투단 픽 선택 (최대 3개)')
+        .setMinValues(1)
+        .setMaxValues(MAX_PICK_SELECTION)
+        .setDisabled(picksDisabled)
+        .addOptions(
+          (selection && selection.faction
+            ? getBattlegroupsByFaction(selection.faction)
+            : BATTLEGROUP_IDS
+          ).map((id) => ({
+            label: id,
+            value: id,
+          })),
+        ),
+    );
+    rows.push(pickRow);
+
+    const confirmDisabled =
+      !selection ||
+      !selection.faction ||
+      !Array.isArray(selection.battlegroups) ||
+      selection.battlegroups.length !== MAX_PICK_SELECTION ||
+      selection.confirmed;
+
+    const buttonRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`confirm:${tournament.id}:${match.id}:${focusAccountId}`)
+        .setLabel('픽 확정')
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(confirmDisabled),
+    );
+    rows.push(buttonRow);
+  }
+
+  return rows;
 }
 
 function startDiscordBotIfConfigured() {
@@ -314,7 +424,7 @@ function startDiscordBotIfConfigured() {
           const payload = await findMatchForCommand(tournamentName, round, player);
           if (!payload) {
             await interaction.reply({
-              content: '해당 조합의 경기를 찾지 못했습니다. 이름을 다시 확인해 주세요.',
+              content: '해당 토너먼트 / 라운드 / 플레이어 조합의 경기를 찾지 못했습니다.\n이름을 다시 확인해 주세요.',
               ephemeral: true,
             });
             return;
@@ -369,11 +479,94 @@ function startDiscordBotIfConfigured() {
               return;
             }
 
-            const result = await updateMatchByIds(meta.tournamentId, meta.matchId, (tournament, match) => {
+            const unique = new Set(selected);
+            if (unique.size !== selected.length) {
+              await interaction.reply({
+                content: '전투단을 중복으로 밴할 수 없습니다.',
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const result = await updateMatch(meta.tournamentId, meta.matchId, (tournament, match) => {
               if (!match.bans || typeof match.bans !== 'object') {
                 match.bans = {};
               }
               match.bans[meta.accountId] = [...selected];
+              // 두 플레이어 모두 밴을 완료했으면 픽 단계로 이동 (간소화된 조건)
+              const players = Array.isArray(match.players) ? match.players : [];
+              if (
+                players.length === 2 &&
+                players.every((p) => Array.isArray(match.bans[p.accountId]) && match.bans[p.accountId].length > 0)
+              ) {
+                match.phase = 'picking';
+              }
+              return { modified: true };
+            });
+
+            if (result.error) {
+              await interaction.reply({
+                content: result.error,
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const payload = {
+              tournament: result.tournament,
+              match: result.match,
+              focusAccountId: meta.accountId,
+            };
+            const embed = buildTournamentEmbed(payload, EmbedBuilder);
+            const components = buildControlComponents(payload, {
+              ActionRowBuilder,
+              StringSelectMenuBuilder,
+              ButtonBuilder,
+              ButtonStyle,
+            });
+
+            await interaction.update({
+              embeds: [embed],
+              components,
+            });
+            return;
+          }
+
+          if (meta.action === 'faction') {
+            const [value] = interaction.values || [];
+            if (!value) {
+              await interaction.reply({
+                content: '진영을 선택해야 합니다.',
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const factionIds = getFactionIds();
+            if (!factionIds.includes(value)) {
+              await interaction.reply({
+                content: '알 수 없는 진영입니다.',
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const result = await updateMatch(meta.tournamentId, meta.matchId, (_tournament, match) => {
+              if (!match.selections || typeof match.selections !== 'object') {
+                match.selections = {};
+              }
+              const selection =
+                match.selections[meta.accountId] || {
+                  faction: null,
+                  battlegroups: [],
+                  confirmed: false,
+                  confirmedAt: null,
+                };
+              selection.faction = value;
+              selection.battlegroups = [];
+              selection.confirmed = false;
+              selection.confirmedAt = null;
+              match.selections[meta.accountId] = selection;
               return { modified: true };
             });
 
@@ -415,7 +608,24 @@ function startDiscordBotIfConfigured() {
               return;
             }
 
-            const result = await updateMatchByIds(meta.tournamentId, meta.matchId, (tournament, match) => {
+            if (selected.length > MAX_PICK_SELECTION) {
+              await interaction.reply({
+                content: `최대 ${MAX_PICK_SELECTION}개까지만 픽할 수 있습니다.`,
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const unique = new Set(selected);
+            if (unique.size !== selected.length) {
+              await interaction.reply({
+                content: '전투단은 중복될 수 없습니다.',
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const result = await updateMatch(meta.tournamentId, meta.matchId, (_tournament, match) => {
               if (!match.selections || typeof match.selections !== 'object') {
                 match.selections = {};
               }
@@ -426,6 +636,34 @@ function startDiscordBotIfConfigured() {
                   confirmed: false,
                   confirmedAt: null,
                 };
+
+              if (!selection.faction) {
+                return {
+                  modified: false,
+                  error: '먼저 진영을 선택해야 합니다.',
+                };
+              }
+
+              const opponent = getOpponent(match, meta.accountId);
+              const opponentBans =
+                (opponent && match.bans && match.bans[opponent.accountId]) || [];
+
+              for (const id of selected) {
+                const factionId = getFactionFromId(id);
+                if (factionId !== selection.faction) {
+                  return {
+                    modified: false,
+                    error: '전투단은 선택한 진영에 속해야 합니다.',
+                  };
+                }
+                if (Array.isArray(opponentBans) && opponentBans.includes(id)) {
+                  return {
+                    modified: false,
+                    error: '상대가 밴한 전투단은 선택할 수 없습니다.',
+                  };
+                }
+              }
+
               selection.battlegroups = [...selected];
               selection.confirmed = false;
               selection.confirmedAt = null;
@@ -462,42 +700,150 @@ function startDiscordBotIfConfigured() {
           }
         }
 
-        if (interaction.isButton() && meta.action === 'confirm') {
-          const result = await updateMatchByIds(meta.tournamentId, meta.matchId, (tournament, match) => {
-            const selection = match.selections?.[meta.accountId];
-            if (!selection || !Array.isArray(selection.battlegroups) || !selection.battlegroups.length) {
-              return { modified: false };
-            }
-            selection.confirmed = true;
-            selection.confirmedAt = new Date().toISOString();
-            return { modified: true };
-          });
+        if (interaction.isButton()) {
+          if (meta.action === 'ready') {
+            const result = await updateMatch(meta.tournamentId, meta.matchId, (tournament, match) => {
+              const player = getPlayer(match, meta.accountId);
+              if (!player || player.ready) {
+                return { modified: false };
+              }
+              player.ready = true;
+              player.readyAt = new Date().toISOString();
 
-          if (result.error) {
-            await interaction.reply({
-              content: result.error,
-              ephemeral: true,
+              if (match.phase === 'waiting') {
+                match.phase = 'ready-check';
+              }
+
+              const players = Array.isArray(match.players) ? match.players : [];
+              if (
+                players.length === 2 &&
+                players.every((p) => p.ready) &&
+                !match.map
+              ) {
+                const pool =
+                  Array.isArray(tournament.mapPool) && tournament.mapPool.length
+                    ? tournament.mapPool
+                    : [];
+                if (pool.length) {
+                  match.map = pool[Math.floor(Math.random() * pool.length)];
+                  match.mapDecidedAt = new Date().toISOString();
+                }
+                match.phase = 'banning';
+                tournament.status = 'live';
+              }
+
+              return { modified: true };
+            });
+
+            if (result.error) {
+              await interaction.reply({
+                content: result.error,
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const payload = {
+              tournament: result.tournament,
+              match: result.match,
+              focusAccountId: meta.accountId,
+            };
+            const embed = buildTournamentEmbed(payload, EmbedBuilder);
+            const components = buildControlComponents(payload, {
+              ActionRowBuilder,
+              StringSelectMenuBuilder,
+              ButtonBuilder,
+              ButtonStyle,
+            });
+
+            await interaction.update({
+              embeds: [embed],
+              components,
             });
             return;
           }
 
-          const payload = {
-            tournament: result.tournament,
-            match: result.match,
-            focusAccountId: meta.accountId,
-          };
-          const embed = buildTournamentEmbed(payload, EmbedBuilder);
-          const components = buildControlComponents(payload, {
-            ActionRowBuilder,
-            StringSelectMenuBuilder,
-            ButtonBuilder,
-            ButtonStyle,
-          });
+          if (meta.action === 'confirm') {
+            const result = await updateMatch(meta.tournamentId, meta.matchId, (_tournament, match) => {
+              const selection = match.selections?.[meta.accountId];
+              if (
+                !selection ||
+                !selection.faction ||
+                !Array.isArray(selection.battlegroups) ||
+                selection.battlegroups.length !== MAX_PICK_SELECTION
+              ) {
+                return {
+                  modified: false,
+                  error: `전투단을 정확히 ${MAX_PICK_SELECTION}개 선택한 후 확정할 수 있습니다.`,
+                };
+              }
 
-          await interaction.update({
-            embeds: [embed],
-            components,
-          });
+              const opponent = getOpponent(match, meta.accountId);
+              const opponentBans =
+                (opponent && match.bans && match.bans[opponent.accountId]) || [];
+
+              for (const id of selection.battlegroups) {
+                const factionId = getFactionFromId(id);
+                if (factionId !== selection.faction) {
+                  return {
+                    modified: false,
+                    error: '전투단은 선택한 진영에 속해야 합니다.',
+                  };
+                }
+                if (Array.isArray(opponentBans) && opponentBans.includes(id)) {
+                  return {
+                    modified: false,
+                    error: '상대가 밴한 전투단은 선택할 수 없습니다.',
+                  };
+                }
+              }
+
+              selection.confirmed = true;
+              selection.confirmedAt = new Date().toISOString();
+
+              const players = Array.isArray(match.players) ? match.players : [];
+              const allLocked = players.every((p) => {
+                const sel = match.selections?.[p.accountId];
+                return (
+                  sel &&
+                  sel.confirmed &&
+                  Array.isArray(sel.battlegroups) &&
+                  sel.battlegroups.length === MAX_PICK_SELECTION
+                );
+              });
+              if (allLocked) {
+                match.phase = 'locked';
+              }
+
+              return { modified: true };
+            });
+
+            if (result.error) {
+              await interaction.reply({
+                content: result.error,
+                ephemeral: true,
+              });
+              return;
+            }
+
+            const payload = {
+              tournament: result.tournament,
+              match: result.match,
+              focusAccountId: meta.accountId,
+            };
+            const embed = buildTournamentEmbed(payload, EmbedBuilder);
+            const components = buildControlComponents(payload, {
+              ActionRowBuilder,
+              StringSelectMenuBuilder,
+              ButtonBuilder,
+              ButtonStyle,
+            });
+
+            await interaction.update({
+              embeds: [embed],
+              components,
+            });
+          }
         }
       }
     } catch (error) {
@@ -525,3 +871,4 @@ function startDiscordBotIfConfigured() {
 module.exports = {
   startDiscordBotIfConfigured,
 };
+
