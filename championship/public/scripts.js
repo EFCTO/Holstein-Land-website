@@ -1263,19 +1263,16 @@ function handleBanSubmit(form) {
     return;
   }
 
-  // 밴을 모두 선택하지 않은 경우에는 한 번 경고 후 두 번째 시도에서만 진행
+  // 밴을 모두 선택하지 않은 경우에는 경고 배너를 한 번만 표시
   if (bans.length < MAX_BAN_PER_PLAYER) {
     const matchKey = `${entry.match.id}:${user.accountId}`;
     if (!banConfirmOverrides.has(matchKey)) {
       banConfirmOverrides.add(matchKey);
       showToast(
-        '밴이 모두 선택되지 않았습니다. 그래도 진행하시겠습니까? 다시 한 번 Confirm Bans를 누르면 진행됩니다.',
+        '밴이 모두 선택되지 않았습니다. 그래도 진행하시겠습니까?',
         'warning',
       );
-      return;
     }
-    // 두 번째 확인 이후에는 플래그를 제거하고 그대로 진행
-    banConfirmOverrides.delete(matchKey);
   }
 
   const match = entry.match;
