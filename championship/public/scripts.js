@@ -159,6 +159,9 @@ let tournaments = [];
 let realtimeSource = null;
 let realtimeRetryId = null;
 
+// 밴을 모두 선택하지 않았을 때 경고를 한 번만 띄우기 위한 상태
+const banConfirmOverrides = new Set();
+
 const state = {
   currentUserId: null,
   ui: {
@@ -1235,14 +1238,18 @@ function handleBanSubmit(form) {
   for (let index = 1; index <= MAX_BAN_PER_PLAYER; index += 1) {
     const value = form.elements[`ban${index}`]?.value?.toString();
     if (!value) {
-      showToast('밴할 전투단을 모두 선택하세요.', 'error');
-      return;
+      continue;
     }
     if (!BATTLEGROUP_MAP.has(value)) {
       showToast('알 수 없는 전투단입니다.', 'error');
       return;
     }
     bans.push(value);
+  }
+
+  if (bans.length === 0) {
+    showToast('최소 하나 이상의 전투단을 밴하세요.', 'error');
+    return;
   }
 
   if (new Set(bans).size !== bans.length) {
@@ -1254,6 +1261,21 @@ function handleBanSubmit(form) {
   if (new Set(factions).size !== bans.length) {
     showToast('진영마다 하나씩만 밴할 수 있습니다.', 'error');
     return;
+  }
+
+  // 밴을 모두 선택하지 않은 경우에는 한 번 경고 후 두 번째 시도에서만 진행
+  if (bans.length < MAX_BAN_PER_PLAYER) {
+    const matchKey = `${entry.match.id}:${user.accountId}`;
+    if (!banConfirmOverrides.has(matchKey)) {
+      banConfirmOverrides.add(matchKey);
+      showToast(
+        '밴이 모두 선택되지 않았습니다. 그래도 진행하시겠습니까? 다시 한 번 Confirm Bans를 누르면 진행됩니다.',
+        'warning',
+      );
+      return;
+    }
+    // 두 번째 확인 이후에는 플래그를 제거하고 그대로 진행
+    banConfirmOverrides.delete(matchKey);
   }
 
   const match = entry.match;

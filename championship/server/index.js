@@ -4,6 +4,7 @@ const path = require('path');
 const { PORT, HOST, PUBLIC_DIR } = require('./config');
 const bootstrap = require('./bootstrap');
 const authRouter = require('./routes/auth');
+const { startDiscordBotIfConfigured } = require('./discordBot');
 const usersRouter = require('./routes/users');
 const tournamentsRouter = require('./routes/tournaments');
 const eventsRouter = require('./routes/events');
@@ -43,6 +44,8 @@ const server = app.listen(PORT, HOST, () => {
 bootstrap().catch((error) => {
   logError('Bootstrap failed', { message: error?.message, stack: error?.stack });
 });
+
+startDiscordBotIfConfigured();
 
 module.exports = server;
 
