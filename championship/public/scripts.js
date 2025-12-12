@@ -148,7 +148,7 @@ const STORAGE_KEYS = {
   session: 'coh3-session',
 };
 
-const MAX_BAN_PER_PLAYER = 4;
+const MAX_BAN_PER_PLAYER = 1;
 const MAX_PICK_SELECTION = 3;
 const REALTIME_ENDPOINT = '/api/events';
 const REALTIME_RECONNECT_DELAY = 5000;
@@ -773,7 +773,7 @@ function renderBanForm(match, player, currentBans) {
 
   return `
     <form class="stacked-form ban-form" data-form="ban" data-match-id="${match.id}" data-player-id="${player.accountId}">
-      <h4>진영당 하나씩 총 네 개의 전투단을 밴하세요</h4>
+      <h4>밴할 전투단을 하나 선택하세요</h4>
       ${selects}
       <button type="submit" class="primary-button">Confirm Bans</button>
     </form>
@@ -795,7 +795,7 @@ function renderBanSelect(name, value, takenIds = []) {
   return `
     <div class="form-row">
       <label for="${name}">밴 ${labelIndex}</label>
-      <select id="${name}" name="${name}" required>
+      <select id="${name}" name="${name}">
         <option value="">전투단 선택</option>
         ${options}
       </select>

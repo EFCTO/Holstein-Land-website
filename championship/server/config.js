@@ -45,4 +45,3 @@ module.exports = {
   IS_PROD,
 };
 
-console.log('Config module loaded');
