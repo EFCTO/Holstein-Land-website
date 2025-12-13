@@ -1,4 +1,4 @@
-﻿const MAX_BATTLEGROUP_SELECTION = 1;
+﻿const MAX_BATTLEGROUP_SELECTION = 3;
 
 const FACTIONS = [
   {
@@ -149,7 +149,7 @@ const STORAGE_KEYS = {
 };
 
 const MAX_BAN_PER_PLAYER = 1;
-const MAX_PICK_SELECTION = 1;
+const MAX_PICK_SELECTION = 3;
 const REALTIME_ENDPOINT = '/api/events';
 const REALTIME_RECONNECT_DELAY = 5000;
 
@@ -839,7 +839,7 @@ function renderSelectionForm(match, opponentBans, selection) {
 
   return `
     <form class="stacked-form selection-form" data-form="selection">
-      <h4>선택한 진영에서 전투단 한 개를 고르세요</h4>
+      <h4>선택한 진영에서 전투단 ${MAX_PICK_SELECTION}개를 고르세요</h4>
       <div class="form-row">
         <label for="select-faction">진영</label>
         <select id="select-faction" name="faction" data-select="faction" required ${locked ? 'disabled' : ''}>
