@@ -681,8 +681,8 @@ function renderPlayerMatchFlow() {
       </header>
       ${renderReadyStatus(match)}
       ${renderMapSection(match)}
-      ${renderBanSection(match, player, myBans, opponentBans)}
       ${renderSelectionSection(match, player, opponent, opponentBans, mySelection, opponentSelection)}
+      ${renderBanSection(match, player, myBans, opponentBans)}
     </article>
   `;
 }
@@ -1218,7 +1218,7 @@ function beginMapSelection(match, tournament) {
   tournament.status = 'live';
 
   setTimeout(() => {
-    match.phase = 'banning';
+    match.phase = 'picking';
     renderPlayerMatchFlow();
     renderViewerTournaments();
     saveTournamentsToStorage();
@@ -1283,7 +1283,7 @@ function handleBanSubmit(form) {
   normalizeMatch(match);
 
   if (haveAllBans(match)) {
-    match.phase = 'picking';
+    match.phase = areSelectionsLocked(match) ? 'locked' : 'picking';
   }
 
   renderPlayerMatchFlow();
@@ -1340,7 +1340,7 @@ function handleSelectionSubmit(form) {
   selection.confirmedAt = new Date().toISOString();
 
   if (areSelectionsLocked(match)) {
-    match.phase = 'locked';
+    match.phase = haveAllBans(match) ? 'locked' : 'banning';
   }
 
   renderPlayerMatchFlow();
@@ -1917,28 +1917,35 @@ function ensureMatchPhaseProgression(tournament, match) {
   }
 
   // If map has been selected and both players are ready,
-  // but the phase is still stuck at map-selected, advance to banning.
+  // but the phase is still stuck at map-selected, advance to picking.
   if (match.phase === 'map-selected') {
     const allReady = Array.isArray(match.players)
       && match.players.length === 2
       && match.players.every((p) => p.ready);
     if (allReady) {
-      match.phase = 'banning';
+      match.phase = 'picking';
       saveTournamentsToStorage();
       return;
     }
   }
 
-  // If all bans are present but the phase hasn't advanced, move to picking.
-  if (match.phase === 'banning' && haveAllBans(match)) {
+  // If both sides locked picks, move to banning (or lock if bans already done).
+  if (match.phase === 'picking' && areSelectionsLocked(match)) {
+    match.phase = haveAllBans(match) ? 'locked' : 'banning';
+    saveTournamentsToStorage();
+    return;
+  }
+
+  // If we are in banning but picks are not locked (legacy/state drift), return to picking.
+  if (match.phase === 'banning' && !areSelectionsLocked(match) && !haveAllBans(match)) {
     match.phase = 'picking';
     saveTournamentsToStorage();
     return;
   }
 
-  // If both sides have locked in selections but phase is still picking, lock it.
-  if (match.phase === 'picking' && areSelectionsLocked(match)) {
-    match.phase = 'locked';
+  // If all bans are present, either finish or return to picking if selections were cleared.
+  if (match.phase === 'banning' && haveAllBans(match)) {
+    match.phase = areSelectionsLocked(match) ? 'locked' : 'picking';
     saveTournamentsToStorage();
   }
 }

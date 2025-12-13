@@ -1,3 +1,4 @@
+const http = require('http');
 const {
   TOURNAMENTS_FILE,
   DATA_BACKEND,
@@ -9,6 +10,10 @@ const {
 } = require('./config');
 const { readJsonFile } = require('./services/dataStore');
 const { info, warn, error: logError } = require('./utils/logger');
+
+const METADATA_BASE = 'http://metadata.google.internal/computeMetadata/v1';
+const METADATA_HEADERS = { 'Metadata-Flavor': 'Google' };
+const METADATA_TIMEOUT_MS = 1200;
 
 function formatUptime(seconds) {
   const totalSeconds = Math.floor(seconds);
@@ -25,6 +30,116 @@ function formatUptime(seconds) {
   if (m || parts.length) parts.push(`${m}분`);
   parts.push(`${s}초`);
   return parts.join(' ');
+}
+
+function fetchMetadata(path) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(
+      `${METADATA_BASE}/${path}`,
+      {
+        method: 'GET',
+        headers: METADATA_HEADERS,
+        timeout: METADATA_TIMEOUT_MS,
+      },
+      (res) => {
+        if (res.statusCode !== 200) {
+          res.resume();
+          reject(new Error(`Metadata status ${res.statusCode}`));
+          return;
+        }
+        const chunks = [];
+        res.on('data', (chunk) => chunks.push(chunk));
+        res.on('end', () => {
+          resolve(Buffer.concat(chunks).toString('utf-8'));
+        });
+      },
+    );
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy(new Error('Metadata request timed out'));
+    });
+    req.end();
+  });
+}
+
+async function fetchMetadataSafe(path) {
+  try {
+    return await fetchMetadata(path);
+  } catch (_error) {
+    return null;
+  }
+}
+
+async function getGcpServerStatus() {
+  const base = {
+    isGcp: false,
+    ok: true,
+    projectId: null,
+    zone: null,
+    instanceName: null,
+    instanceId: null,
+    machineType: null,
+    internalIp: null,
+    externalIp: null,
+    uptimeSec: null,
+    message: null,
+  };
+
+  try {
+    const projectId = await fetchMetadataSafe('project/project-id');
+    if (!projectId) {
+      return {
+        ...base,
+        ok: true,
+        message: 'GCP 메타데이터 서버 응답 없음 (로컬/테스트 환경일 수 있습니다).',
+      };
+    }
+
+    const [
+      zonePath,
+      instanceName,
+      instanceId,
+      machineTypePath,
+      internalIp,
+      externalIp,
+      uptimeSecRaw,
+    ] = await Promise.all([
+      fetchMetadataSafe('instance/zone'),
+      fetchMetadataSafe('instance/name'),
+      fetchMetadataSafe('instance/id'),
+      fetchMetadataSafe('instance/machine-type'),
+      fetchMetadataSafe('instance/network-interfaces/0/ip'),
+      fetchMetadataSafe('instance/network-interfaces/0/access-configs/0/external-ip'),
+      fetchMetadataSafe('instance/uptime'),
+    ]);
+
+    const zone = zonePath ? zonePath.split('/').pop() : null;
+    const machineType = machineTypePath ? machineTypePath.split('/').pop() : null;
+    const uptimeSec = uptimeSecRaw ? Number(uptimeSecRaw) : null;
+
+    return {
+      ...base,
+      isGcp: true,
+      ok: true,
+      projectId,
+      zone,
+      instanceName,
+      instanceId,
+      machineType,
+      internalIp,
+      externalIp,
+      uptimeSec,
+      message: 'GCP 메타데이터 조회 성공',
+    };
+  } catch (error) {
+    logError('GCP metadata check failed', { message: error?.message });
+    return {
+      ...base,
+      isGcp: true,
+      ok: false,
+      message: error?.message || 'GCP 메타데이터 확인 실패',
+    };
+  }
 }
 
 async function checkStorageHealth() {
@@ -163,12 +278,13 @@ async function getTournamentStats() {
 }
 
 function buildStatusEmbed(status, EmbedBuilder) {
-  const { storage, tournaments } = status;
-  const overallOk = storage.ok && tournaments.ok;
+  const { storage, tournaments, gcp } = status;
+  const overallOk = storage.ok && tournaments.ok && (gcp.ok || !gcp.isGcp);
   const color = overallOk ? 0x57f287 : 0xed4245;
 
   const storageStatusLabel = storage.ok ? '정상' : '오류';
   const tournamentStatusLabel = tournaments.ok ? '정상' : '오류';
+  const gcpStatusLabel = gcp.isGcp ? (gcp.ok ? '정상' : '오류') : 'GCP 아님';
 
   const mem = process.memoryUsage();
   const toMb = (bytes) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
@@ -194,7 +310,7 @@ function buildStatusEmbed(status, EmbedBuilder) {
 
   const embed = new EmbedBuilder()
     .setTitle('서버 상태 (/status)')
-    .setDescription('웹 서버 · 데이터(GCP/로컬) · 대회 진행 상황 요약입니다.')
+    .setDescription('웹 서버 · GCP 서버 · 데이터(GCP/로컬) · 대회 진행 상황 요약입니다.')
     .setColor(color)
     .addFields(
       {
@@ -207,6 +323,25 @@ function buildStatusEmbed(status, EmbedBuilder) {
           `Node: ${process.version}`,
           `메모리: rss=${toMb(mem.rss)}, heapUsed=${toMb(mem.heapUsed)}`,
         ].join('\n'),
+        inline: false,
+      },
+      {
+        name: 'GCP 서버',
+        value: gcp.isGcp
+          ? [
+              `상태: ${gcpStatusLabel}`,
+              `프로젝트: ${gcp.projectId || '-'}`,
+              `존: ${gcp.zone || '-'}`,
+              `인스턴스: ${gcp.instanceName || '-'} (${gcp.instanceId || '-'})`,
+              `머신타입: ${gcp.machineType || '-'}`,
+              `내부 IP: ${gcp.internalIp || '-'}`,
+              `외부 IP: ${gcp.externalIp || '-'}`,
+              gcp.uptimeSec ? `GCP 업타임: ${formatUptime(gcp.uptimeSec)}` : null,
+              gcp.message,
+            ]
+              .filter(Boolean)
+              .join('\n')
+          : gcp.message || 'GCP 인스턴스가 아닌 환경으로 감지되었습니다.',
         inline: false,
       },
       {
@@ -315,11 +450,12 @@ function startDiscordBotIfConfigured() {
       // 모두에게 보이도록 ephemeral 사용하지 않음
       await interaction.deferReply();
 
-      const [storage, tournaments] = await Promise.all([
+      const [storage, tournaments, gcp] = await Promise.all([
         checkStorageHealth(),
         getTournamentStats(),
+        getGcpServerStatus(),
       ]);
-      const embed = buildStatusEmbed({ storage, tournaments }, EmbedBuilder);
+      const embed = buildStatusEmbed({ storage, tournaments, gcp }, EmbedBuilder);
 
       await interaction.editReply({
         embeds: [embed],
@@ -353,4 +489,3 @@ function startDiscordBotIfConfigured() {
 module.exports = {
   startDiscordBotIfConfigured,
 };
-
