@@ -125,3 +125,8 @@ C:\Program Files\nodejs\node.exe --experimental-network-inspection .\web.js
 [2025-12-12T09:12:07.875Z] [DEBUG] Initialized filesystem data backend {"directory":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\championship\\data"}
 [2025-12-12T09:36:58.461Z] [DEBUG] Initialized filesystem data backend {"directory":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\championship\\data"}
 [2025-12-12T10:06:55.419Z] [DEBUG] Initialized filesystem data backend {"directory":"C:\\Users\\goc\\OneDrive\\Desktop\\withgoweb\\championship\\data"}
+[2025-12-12T11:58:31.876Z] [DEBUG] Initialized Cloud Storage data backend {"bucket":"json-data-center","prefix":"championship"}
+[2025-12-12T11:58:31.906Z] [INFO] Discord bot token not set; skipping Discord integration
+[2025-12-12T11:58:31.914Z] [INFO] Server listening {"host":"0.0.0.0","port":8001}
+[2025-12-12T11:58:32.223Z] [ERROR] Failed to read JSON object {"objectName":"championship/user.json","message":"Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information."}
+[2025-12-12T11:58:32.224Z] [WARN] Bootstrap warning {"message":"Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information."}

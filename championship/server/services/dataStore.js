@@ -12,22 +12,42 @@ const {
 } = require('../config');
 const { debug, warn, error: logError } = require('../utils/logger');
 const CLOUD_BACKEND = 'gcs';
-const useCloudStorage = DATA_BACKEND === CLOUD_BACKEND;
+let useCloudStorage = DATA_BACKEND === CLOUD_BACKEND;
 const objectPrefix = (DATA_PREFIX || '').replace(/(^\/+|\/+$)/g, '');
 let storageBucket = null;
 
+function switchToDiskBackend(reason) {
+  if (!useCloudStorage) {
+    return;
+  }
+  warn('Falling back to filesystem data backend', {
+    reason: reason || 'Cloud backend unavailable',
+    directory: DATA_DIR,
+  });
+  useCloudStorage = false;
+  storageBucket = null;
+}
+
 if (useCloudStorage) {
   if (!DATA_BUCKET) {
-    throw new Error('DATA_BUCKET must be set when DATA_BACKEND is "gcs".');
+    switchToDiskBackend('DATA_BUCKET is not set for gcs backend');
+  } else {
+    try {
+      // eslint-disable-next-line global-require, import/no-extraneous-dependencies
+      const { Storage } = require('@google-cloud/storage');
+      const storage = new Storage();
+      storageBucket = storage.bucket(DATA_BUCKET);
+      debug('Initialized Cloud Storage data backend', {
+        bucket: DATA_BUCKET,
+        prefix: objectPrefix || '(root)',
+      });
+    } catch (error) {
+      switchToDiskBackend(error?.message || 'Cloud Storage initialization failed');
+    }
   }
-  const { Storage } = require('@google-cloud/storage');
-  const storage = new Storage();
-  storageBucket = storage.bucket(DATA_BUCKET);
-  debug('Initialized Cloud Storage data backend', {
-    bucket: DATA_BUCKET,
-    prefix: objectPrefix || '(root)',
-  });
-} else {
+}
+
+if (!useCloudStorage) {
   debug('Initialized filesystem data backend', { directory: DATA_DIR });
 }
 
@@ -73,9 +93,47 @@ function parseJsonContent(raw, fallback, meta) {
   return fallback;
 }
 
+function shouldFallbackToDisk(error) {
+  if (!useCloudStorage) {
+    return false;
+  }
+  if (!error) {
+    return false;
+  }
+  const codes = new Set([
+    'EAI_AGAIN',
+    'ENOTFOUND',
+    'EACCES',
+    'ECONNREFUSED',
+    'EHOSTUNREACH',
+    'ECONNRESET',
+    401,
+    403,
+  ]);
+  if (error.code != null && codes.has(error.code)) {
+    return true;
+  }
+  const message = String(error.message || '').toLowerCase();
+  return (
+    message.includes('could not load the default credentials') ||
+    message.includes('unauthorized') ||
+    message.includes('forbidden') ||
+    message.includes('permission') ||
+    message.includes('unauthenticated')
+  );
+}
+
 async function readJsonFile(filePath, fallback) {
   if (useCloudStorage) {
-    return readJsonFromStorage(filePath, fallback);
+    try {
+      return await readJsonFromStorage(filePath, fallback);
+    } catch (error) {
+      if (shouldFallbackToDisk(error)) {
+        switchToDiskBackend(error.message || error.code);
+        return readJsonFromDisk(filePath, fallback);
+      }
+      throw error;
+    }
   }
   return readJsonFromDisk(filePath, fallback);
 }
@@ -115,7 +173,16 @@ async function readJsonFromStorage(filePath, fallback) {
 
 async function writeJsonFile(filePath, data) {
   if (useCloudStorage) {
-    await writeJsonToStorage(filePath, data);
+    try {
+      await writeJsonToStorage(filePath, data);
+    } catch (error) {
+      if (shouldFallbackToDisk(error)) {
+        switchToDiskBackend(error.message || error.code);
+        await writeJsonToDisk(filePath, data);
+      } else {
+        throw error;
+      }
+    }
   } else {
     await writeJsonToDisk(filePath, data);
   }

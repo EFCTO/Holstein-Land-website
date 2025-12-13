@@ -1,4 +1,4 @@
-﻿const MAX_BATTLEGROUP_SELECTION = 3;
+﻿const MAX_BATTLEGROUP_SELECTION = 1;
 
 const FACTIONS = [
   {
@@ -149,7 +149,7 @@ const STORAGE_KEYS = {
 };
 
 const MAX_BAN_PER_PLAYER = 1;
-const MAX_PICK_SELECTION = 3;
+const MAX_PICK_SELECTION = 1;
 const REALTIME_ENDPOINT = '/api/events';
 const REALTIME_RECONNECT_DELAY = 5000;
 
@@ -758,7 +758,8 @@ function renderBanSection(match, player, myBans, opponentBans) {
 }
 
 function renderBanForm(match, player, currentBans) {
-  const values = [...currentBans];
+  // 현재 밴 목록을 슬롯 개수에 맞춰 정규화 (최대 개수 초과분 제거)
+  const values = [...currentBans].slice(0, MAX_BAN_PER_PLAYER);
   while (values.length < MAX_BAN_PER_PLAYER) {
     values.push('');
   }
@@ -838,7 +839,7 @@ function renderSelectionForm(match, opponentBans, selection) {
 
   return `
     <form class="stacked-form selection-form" data-form="selection">
-      <h4>선택한 진영에서 전투단 세 개를 고르세요</h4>
+      <h4>선택한 진영에서 전투단 한 개를 고르세요</h4>
       <div class="form-row">
         <label for="select-faction">진영</label>
         <select id="select-faction" name="faction" data-select="faction" required ${locked ? 'disabled' : ''}>
@@ -869,6 +870,7 @@ function renderBattlegroupPickers(selection, opponentBans, locked) {
           const takenIds = new Set(
             picks.map((id, idx) => (idx !== index ? id : null)).filter(Boolean),
           );
+          const label = MAX_PICK_SELECTION === 1 ? '전투단' : `전투단 ${index + 1}`;
 
           const options = available
             .filter((bg) => !opponentBans.includes(bg.id) || bg.id === current)
@@ -881,7 +883,7 @@ function renderBattlegroupPickers(selection, opponentBans, locked) {
 
           return `
             <div class="form-row">
-              <label for="pick${index + 1}">전투단 ${index + 1}</label>
+              <label for="pick${index + 1}">${label}</label>
               <select id="pick${index + 1}" name="pick${index + 1}" data-select="pick" data-pick-index="${index + 1}" ${locked ? 'disabled' : ''}>
                 <option value="">전투단 선택</option>
                 ${options}
@@ -1488,17 +1490,31 @@ function normalizeMatch(match) {
     if (!Array.isArray(bans[player.accountId])) {
       bans[player.accountId] = [];
     }
-    if (!selections[player.accountId]) {
-      selections[player.accountId] = {
+    // 밴 슬롯 감소 시 기존 데이터에 남아있는 초과 밴 제거
+    bans[player.accountId] = bans[player.accountId].slice(0, MAX_BAN_PER_PLAYER);
+
+    const selection =
+      selections[player.accountId] || {
         faction: null,
         battlegroups: [],
         confirmed: false,
         confirmedAt: null,
       };
+
+    if (!Array.isArray(selection.battlegroups)) {
+      selection.battlegroups = [];
     }
-    if (!Array.isArray(selections[player.accountId].battlegroups)) {
-      selections[player.accountId].battlegroups = [];
-    }
+
+    selection.faction = selection.faction || null;
+    selection.battlegroups = selection.battlegroups
+      .filter((id) => id)
+      .slice(0, MAX_PICK_SELECTION);
+
+    const hasCompletePick = selection.battlegroups.length === MAX_PICK_SELECTION;
+    selection.confirmed = Boolean(selection.confirmed && hasCompletePick);
+    selection.confirmedAt = selection.confirmed ? selection.confirmedAt || null : null;
+
+    selections[player.accountId] = selection;
   });
 
   return {
@@ -1962,7 +1978,7 @@ function cleanupSelectionsAfterBan(match) {
 
 function haveAllBans(match) {
   return match.players.every(
-    (player) => (match.bans[player.accountId] || []).length === MAX_BAN_PER_PLAYER,
+    (player) => (match.bans[player.accountId] || []).length >= MAX_BAN_PER_PLAYER,
   );
 }
 

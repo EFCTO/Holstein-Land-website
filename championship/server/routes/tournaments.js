@@ -21,7 +21,12 @@ router.get('/tournaments', async (_req, res) => {
 });
 
 router.put('/tournaments', authRequired(), async (req, res) => {
-  const tournaments = Array.isArray(req.body) ? req.body : [];
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({
+      message: '토너먼트 데이터는 JSON 배열이어야 합니다.',
+    });
+  }
+  const tournaments = req.body;
   try {
     await writeJsonFile(TOURNAMENTS_FILE, tournaments);
     info('Saved tournaments', { count: tournaments.length });
@@ -35,4 +40,3 @@ router.put('/tournaments', authRequired(), async (req, res) => {
 });
 
 module.exports = router;
-
